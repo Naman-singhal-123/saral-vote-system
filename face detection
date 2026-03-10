@@ -1,0 +1,48 @@
+from deepface import DeepFace
+import cv2
+import os
+
+dataset_path = r"C:\Users\hp\PycharmProjects\saralvote\dataset"
+
+cap = cv2.VideoCapture(0)
+
+while True:
+
+    ret, frame = cap.read()
+
+    cv2.imshow("Camera", frame)
+
+    key = cv2.waitKey(1)
+
+    # press C to capture
+    if key == ord('c'):
+
+        cv2.imwrite("capture.jpg", frame)
+
+        matched = False
+
+        for img in os.listdir(dataset_path):
+
+            dataset_image = os.path.join(dataset_path, img)
+
+            try:
+                result = DeepFace.verify("capture.jpg", dataset_image)
+
+                if result["verified"]:
+
+                    print("Face Matched with:", img)
+
+                    matched = True
+                    break
+
+            except:
+                pass
+
+        if not matched:
+            print("Face Not Found in Dataset")
+
+    if key == 27:
+        break
+
+cap.release()
+cv2.destroyAllWindows()
